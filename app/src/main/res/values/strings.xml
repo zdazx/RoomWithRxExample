@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RoomWithRxExample</string>
+    <string name="go_submit_btn_text">Go to Submit</string>
+    <string name="go_view_btn_text">Go to View</string>
+    <string name="name_text">Name</string>
+    <string name="age_text">Age</string>
+    <string name="gender_text">Gender</string>
+    <string name="submit_btn_text">Submit</string>
+</resources>
