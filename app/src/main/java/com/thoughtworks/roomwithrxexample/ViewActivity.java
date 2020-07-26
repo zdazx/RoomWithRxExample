@@ -1,6 +1,7 @@
 package com.thoughtworks.roomwithrxexample;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import rx.Observable;
+import rx.Observer;
+import rx.schedulers.Schedulers;
+
 public class ViewActivity extends AppCompatActivity {
+    private static ArrayList<Person> person = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,12 +32,29 @@ public class ViewActivity extends AppCompatActivity {
     }
 
     private ArrayList<Person> getDataSet() {
-        ArrayList<Person> personSet = new ArrayList<>();
-        personSet.add(new Person("AAA", 18, 0));
-        personSet.add(new Person("BBB", 18, 0));
-        personSet.add(new Person("CCC", 18, 0));
-        personSet.add(new Person("DDD", 18, 0));
-        personSet.add(new Person("EEE", 18, 0));
-        return personSet;
+        PersonDao personDao = MyApplication.getInstance().getPersonDao();
+
+        Observable.just(new Object())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        person = (ArrayList<Person>) personDao.getPersons();
+                    }
+                });
+
+        SystemClock.sleep(100);
+        return person;
     }
 }
