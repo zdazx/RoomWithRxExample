@@ -72,10 +72,8 @@ public class SubmitActivity extends AppCompatActivity {
                 });
 
         SystemClock.sleep(100);
-        if (!isSubmitted) {
-            Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
-        }
-        Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+        String toastInfo = isSubmitted ? "Success" : "Failed";
+        Toast.makeText(getApplicationContext(), toastInfo, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
