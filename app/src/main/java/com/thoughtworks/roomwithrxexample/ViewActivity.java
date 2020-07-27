@@ -18,43 +18,36 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class ViewActivity extends AppCompatActivity {
-    private static ArrayList<Person> person = new ArrayList<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
-
-        RecyclerView recycleView = findViewById(R.id.recycle_view_container);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        MyAdapter myAdapter = new MyAdapter(getDataSet());
-
-        recycleView.setLayoutManager(linearLayoutManager);
-        recycleView.setAdapter(myAdapter);
+        showData();
     }
 
-    private ArrayList<Person> getDataSet() {
+    private void showData() {
         LocalDataSource localDataSource = new LocalDataSource();
 
         localDataSource.getPersons()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<Person>>() {
-                    private Disposable disposable;
                     @Override
                     public void onSubscribe(Disposable d) {
-                        disposable = d;
-                        compositeDisposable.add(disposable);
+                        compositeDisposable.add(d);
                     }
 
                     @Override
                     public void onSuccess(List<Person> people) {
-                        if (disposable.isDisposed()) {
-                            return;
-                        }
-                        person = (ArrayList<Person>) people;
+                        RecyclerView recycleView = findViewById(R.id.recycle_view_container);
+
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+                        MyAdapter myAdapter = new MyAdapter((ArrayList<Person>) people);
+
+                        recycleView.setLayoutManager(linearLayoutManager);
+                        recycleView.setAdapter(myAdapter);
                     }
 
                     @Override
@@ -62,8 +55,6 @@ public class ViewActivity extends AppCompatActivity {
 
                     }
                 });
-
-        return person;
     }
 
     @Override

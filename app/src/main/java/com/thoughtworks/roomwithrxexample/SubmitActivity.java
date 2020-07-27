@@ -23,7 +23,6 @@ public class SubmitActivity extends AppCompatActivity {
     private EditText nameView;
     private EditText ageView;
     private EditText genderView;
-    public static boolean isSubmitted = false;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
@@ -54,21 +53,21 @@ public class SubmitActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Long>() {
-                    private Disposable disposable;
                     @Override
                     public void onSubscribe(Disposable d) {
-                        disposable = d;
-                        compositeDisposable.add(disposable);
+                        compositeDisposable.add(d);
                     }
 
                     @Override
                     public void onSuccess(Long aLong) {
-                        if (disposable.isDisposed()) {
-                            return;
-                        }
+                        boolean isSubmitted = false;
                         if (Objects.nonNull(aLong)) {
                             isSubmitted = true;
                         }
+                        String toastInfo = isSubmitted ? "Success" : "Failed";
+                        Toast.makeText(getApplicationContext(), toastInfo, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
                     }
 
                     @Override
@@ -76,11 +75,6 @@ public class SubmitActivity extends AppCompatActivity {
 
                     }
                 });
-
-        String toastInfo = isSubmitted ? "Success" : "Failed";
-        Toast.makeText(getApplicationContext(), toastInfo, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     @Override
