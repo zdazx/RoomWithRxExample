@@ -41,7 +41,7 @@ public class SubmitActivity extends AppCompatActivity {
         String age = ageView.getText().toString();
         String gender = genderView.getText().toString();
 
-        if (IsInvalid(name, age, gender)) {
+        if (isInvalid(name, age, gender)) {
             return;
         }
 
@@ -80,11 +80,11 @@ public class SubmitActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private boolean IsInvalid(String name, String age, String gender) {
-        return IsInvalidName(name) || IsInvalidAge(age) || IsInvalidGender(gender);
+    private boolean isInvalid(String name, String age, String gender) {
+        return isInvalidName(name) || isInvalidAge(age) || isInvalidGender(gender);
     }
 
-    private boolean IsInvalidGender(String gender) {
+    private boolean isInvalidGender(String gender) {
         Pattern genderPattern = Pattern.compile("[0|1]");
         Matcher genderMatcher = genderPattern.matcher(gender);
         if (!genderMatcher.matches()) {
@@ -94,7 +94,7 @@ public class SubmitActivity extends AppCompatActivity {
         return false;
     }
 
-    private boolean IsInvalidAge(String age) {
+    private boolean isInvalidAge(String age) {
         Pattern agePattern = Pattern.compile("[0-9]{1,2}");
         Matcher ageMatcher = agePattern.matcher(age);
         if (!ageMatcher.matches()) {
@@ -104,7 +104,7 @@ public class SubmitActivity extends AppCompatActivity {
         return false;
     }
 
-    private boolean IsInvalidName(String name) {
+    private boolean isInvalidName(String name) {
         if (Objects.isNull(name) || name.length() > 8 || name.length() == 0) {
             Toast.makeText(getApplicationContext(), "Name Invalid", Toast.LENGTH_SHORT).show();
             return true;
