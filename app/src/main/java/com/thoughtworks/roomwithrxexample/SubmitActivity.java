@@ -48,9 +48,9 @@ public class SubmitActivity extends AppCompatActivity {
         }
 
         Person person = new Person(name, Integer.parseInt(age), Integer.parseInt(gender));
-        PersonDao personDao = MyApplication.getInstance().getPersonDao();
+        LocalDataSource localDataSource = new LocalDataSource();
 
-        personDao.createPerson(person)
+        localDataSource.createPerson(person)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Long>() {

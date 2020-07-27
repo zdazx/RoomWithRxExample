@@ -36,9 +36,9 @@ public class ViewActivity extends AppCompatActivity {
     }
 
     private ArrayList<Person> getDataSet() {
-        PersonDao personDao = MyApplication.getInstance().getPersonDao();
+        LocalDataSource localDataSource = new LocalDataSource();
 
-        personDao.getPersons()
+        localDataSource.getPersons()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<Person>>() {
