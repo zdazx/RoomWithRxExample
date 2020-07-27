@@ -59,9 +59,7 @@ public class ViewActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (!compositeDisposable.isDisposed()) {
-            compositeDisposable.clear();
-        }
+        compositeDisposable.clear();
         super.onDestroy();
     }
 }
