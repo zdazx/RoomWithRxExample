@@ -14,15 +14,19 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import rx.Observable;
-import rx.Observer;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class SubmitActivity extends AppCompatActivity {
     private EditText nameView;
     private EditText ageView;
     private EditText genderView;
     public static boolean isSubmitted = false;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,13 +52,26 @@ public class SubmitActivity extends AppCompatActivity {
         Person person = new Person(name, Integer.parseInt(age), Integer.parseInt(gender));
         PersonDao personDao = MyApplication.getInstance().getPersonDao();
 
-        Observable.create((Observable.OnSubscribe<Person>) subscriber -> subscriber.onNext(person))
-                .subscribeOn(Schedulers.io())
+        Observable.create((ObservableOnSubscribe<Person>) emitter -> emitter.onNext(person))
                 .observeOn(Schedulers.io())
                 .subscribe(new Observer<Person>() {
-                    @Override
-                    public void onCompleted() {
+                    private Disposable disposable;
 
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
+                        compositeDisposable.add(disposable);
+                    }
+
+                    @Override
+                    public void onNext(Person person) {
+                        if (disposable.isDisposed()) {
+                            return;
+                        }
+                        long personId = personDao.createPerson(person);
+                        if (Objects.nonNull(personId)) {
+                            isSubmitted = true;
+                        }
                     }
 
                     @Override
@@ -63,19 +80,25 @@ public class SubmitActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(Person person) {
-                        long personId = personDao.createPerson(person);
-                        if (Objects.nonNull(personId)) {
-                            isSubmitted = true;
-                        }
+                    public void onComplete() {
+
                     }
                 });
+
 
         SystemClock.sleep(100);
         String toastInfo = isSubmitted ? "Success" : "Failed";
         Toast.makeText(getApplicationContext(), toastInfo, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!compositeDisposable.isDisposed()) {
+            compositeDisposable.clear();
+        }
+        super.onDestroy();
     }
 
     private boolean isInvalid(String name, String age, String gender) {

@@ -10,12 +10,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import rx.Observable;
-import rx.Observer;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class ViewActivity extends AppCompatActivity {
     private static ArrayList<Person> person = new ArrayList<>();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,12 +39,23 @@ public class ViewActivity extends AppCompatActivity {
         PersonDao personDao = MyApplication.getInstance().getPersonDao();
 
         Observable.just(new Object())
-                .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(new Observer<Object>() {
-                    @Override
-                    public void onCompleted() {
 
+                    private Disposable disposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
+                        compositeDisposable.add(disposable);
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        if (disposable.isDisposed()) {
+                            return;
+                        }
+                        person = (ArrayList<Person>) personDao.getPersons();
                     }
 
                     @Override
@@ -49,12 +64,20 @@ public class ViewActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(Object o) {
-                        person = (ArrayList<Person>) personDao.getPersons();
+                    public void onComplete() {
+
                     }
                 });
 
         SystemClock.sleep(100);
         return person;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!compositeDisposable.isDisposed()) {
+            compositeDisposable.clear();
+        }
+        super.onDestroy();
     }
 }
