@@ -6,11 +6,13 @@ import androidx.room.Query;
 
 import java.util.List;
 
+import io.reactivex.Single;
+
 @Dao
 public interface PersonDao {
     @Insert
-    long createPerson(Person person);
+    Single<Long> createPerson(Person person);
 
     @Query("SELECT * FROM person")
-    List<Person> getPersons();
+    Single<List<Person>> getPersons();
 }

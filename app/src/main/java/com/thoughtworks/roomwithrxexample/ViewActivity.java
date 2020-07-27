@@ -1,7 +1,6 @@
 package com.thoughtworks.roomwithrxexample;
 
 import android.os.Bundle;
-import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,9 +8,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -38,12 +38,11 @@ public class ViewActivity extends AppCompatActivity {
     private ArrayList<Person> getDataSet() {
         PersonDao personDao = MyApplication.getInstance().getPersonDao();
 
-        Observable.just(new Object())
-                .observeOn(Schedulers.io())
-                .subscribe(new Observer<Object>() {
-
+        personDao.getPersons()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<List<Person>>() {
                     private Disposable disposable;
-
                     @Override
                     public void onSubscribe(Disposable d) {
                         disposable = d;
@@ -51,25 +50,19 @@ public class ViewActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(Object o) {
+                    public void onSuccess(List<Person> people) {
                         if (disposable.isDisposed()) {
                             return;
                         }
-                        person = (ArrayList<Person>) personDao.getPersons();
+                        person = (ArrayList<Person>) people;
                     }
 
                     @Override
                     public void onError(Throwable e) {
 
                     }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
                 });
 
-        SystemClock.sleep(100);
         return person;
     }
 
