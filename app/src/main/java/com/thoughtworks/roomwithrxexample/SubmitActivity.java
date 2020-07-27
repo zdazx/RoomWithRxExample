@@ -47,7 +47,7 @@ public class SubmitActivity extends AppCompatActivity {
         }
 
         Person person = new Person(name, Integer.parseInt(age), Integer.parseInt(gender));
-        LocalDataSource localDataSource = new LocalDataSource();
+        LocalDataSource localDataSource = MyApplication.getInstance().getLocalDataSource();
 
         localDataSource.createPerson(person)
                 .subscribeOn(Schedulers.io())

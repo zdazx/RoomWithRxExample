@@ -4,6 +4,7 @@ import android.app.Application;
 
 public class MyApplication extends Application {
     private static MyApplication application;
+    private static LocalDataSource localDataSource;
 
     public static MyApplication getInstance() {
         return application;
@@ -13,5 +14,10 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
+        localDataSource = new LocalDataSource();
+    }
+
+    public LocalDataSource getLocalDataSource() {
+        return localDataSource;
     }
 }

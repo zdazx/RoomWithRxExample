@@ -28,7 +28,7 @@ public class ViewActivity extends AppCompatActivity {
     }
 
     private void showData() {
-        LocalDataSource localDataSource = new LocalDataSource();
+        LocalDataSource localDataSource = MyApplication.getInstance().getLocalDataSource();
 
         localDataSource.getPersons()
                 .subscribeOn(Schedulers.io())
