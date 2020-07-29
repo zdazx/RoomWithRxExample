@@ -13,8 +13,13 @@ import java.util.ArrayList;
 public class MyAdapter extends RecyclerView.Adapter {
     private ArrayList<Person> personSet;
 
-    public MyAdapter(ArrayList<Person> PersonSet) {
-        this.personSet = PersonSet;
+    public MyAdapter() {
+        personSet = new ArrayList<>();
+    }
+
+    public void setPersonSet(ArrayList<Person> personSet) {
+        this.personSet = personSet;
+        this.notifyDataSetChanged();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

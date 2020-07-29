@@ -19,11 +19,21 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ViewActivity extends AppCompatActivity {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private MyAdapter myAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
+
+        RecyclerView recycleView = findViewById(R.id.recycle_view_container);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        myAdapter = new MyAdapter();
+
+        recycleView.setLayoutManager(linearLayoutManager);
+        recycleView.setAdapter(myAdapter);
+
         showData();
     }
 
@@ -41,13 +51,7 @@ public class ViewActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(List<Person> people) {
-                        RecyclerView recycleView = findViewById(R.id.recycle_view_container);
-
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-                        MyAdapter myAdapter = new MyAdapter((ArrayList<Person>) people);
-
-                        recycleView.setLayoutManager(linearLayoutManager);
-                        recycleView.setAdapter(myAdapter);
+                        myAdapter.setPersonSet((ArrayList<Person>) people);
                     }
 
                     @Override
